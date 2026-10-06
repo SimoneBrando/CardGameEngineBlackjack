@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- Parametri di connessione a XAMPP (MySQL/MariaDB) -->
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/blackjack_db?serverTimezone=UTC</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password"></property>
+
+        <!-- Dialetto e impostazioni -->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+        
+        <!-- create-drop per testare, update per mantenere i dati -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Mappatura delle entità -->
+        <mapping class="com.mycompany.blackjack.domain.Giocatore"/>
+        <mapping class="com.mycompany.blackjack.domain.Dealer"/>
+        <mapping class="com.mycompany.blackjack.domain.Partita"/>
+        <mapping class="com.mycompany.blackjack.domain.Mano"/>
+        <mapping class="com.mycompany.blackjack.domain.Mazzo"/>
+        <mapping class="com.mycompany.blackjack.domain.Carta"/>
+        <mapping class="com.mycompany.blackjack.domain.Puntata"/>
+        <mapping class="com.mycompany.blackjack.domain.Fiche"/>
+    </session-factory>
+</hibernate-configuration>
