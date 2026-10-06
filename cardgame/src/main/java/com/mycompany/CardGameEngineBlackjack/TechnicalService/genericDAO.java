@@ -15,16 +15,24 @@ public class genericDAO<T> {
     }
 
     public void save(T entity) {
-        Transaction transaction = null;
-        try (Session session = persistentManager.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            session.persist(entity);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace();
+            // La sessione si chiude automaticamente alla fine del blocco principale
+            try (Session session = persistentManager.getSessionFactory().openSession()) {
+                Transaction transaction = session.beginTransaction();
+                try {
+                    // Usiamo merge al posto di persist. Gestisce perfettamente le entità 
+                    // "detached" che hai già salvato (come il Mazzo e il Dealer nel Seeder)
+                    session.merge(entity);
+                    transaction.commit();
+                } catch (Exception e) {
+                    // Il rollback ora avviene MENTRE la sessione è ancora aperta
+                    if (transaction != null && transaction.isActive()) {
+                        transaction.rollback();
+                    }
+                    // Stampa il VERO errore
+                    e.printStackTrace(); 
+                }
+            }
         }
-    }
 
     public void update(T entity) {
         Transaction transaction = null;

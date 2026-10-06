@@ -6,7 +6,7 @@
     <session-factory>
         <!-- Parametri di connessione a XAMPP (MySQL/MariaDB) -->
         <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/blackjack_db?serverTimezone=UTC</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/cardgameblackjackengine?serverTimezone=UTC</property>
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.connection.password"></property>
 
@@ -19,13 +19,14 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
 
         <!-- Mappatura delle entità -->
-        <mapping class="com.mycompany.blackjack.domain.Giocatore"/>
-        <mapping class="com.mycompany.blackjack.domain.Dealer"/>
-        <mapping class="com.mycompany.blackjack.domain.Partita"/>
-        <mapping class="com.mycompany.blackjack.domain.Mano"/>
-        <mapping class="com.mycompany.blackjack.domain.Mazzo"/>
-        <mapping class="com.mycompany.blackjack.domain.Carta"/>
-        <mapping class="com.mycompany.blackjack.domain.Puntata"/>
-        <mapping class="com.mycompany.blackjack.domain.Fiche"/>
+        
+        <mapping class="com.mycompany.CardGameEngineBlackjack.Domain.Dealer"/>
+        <mapping class="com.mycompany.CardGameEngineBlackjack.Domain.Partita"/>
+        <mapping class="com.mycompany.CardGameEngineBlackjack.Domain.Mano"/>
+        <mapping class="com.mycompany.CardGameEngineBlackjack.Domain.Mazzo"/>
+        <mapping class="com.mycompany.CardGameEngineBlackjack.Domain.Carta"/>
+        <mapping class="com.mycompany.CardGameEngineBlackjack.Domain.Puntata"/>
+        <mapping class="com.mycompany.CardGameEngineBlackjack.Domain.Fiche"/>
+        <mapping class="com.mycompany.CardGameEngineBlackjack.Domain.Giocatore"/>
     </session-factory>
 </hibernate-configuration>
