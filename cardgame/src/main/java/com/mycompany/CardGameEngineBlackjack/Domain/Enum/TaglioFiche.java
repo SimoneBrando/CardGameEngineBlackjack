@@ -1,6 +1,6 @@
 package com.mycompany.CardGameEngineBlackjack.Domain.Enum;
 
-public enum TaglioFiche {
+public enum taglioFiche {
     UNO,
     CINQUE,
     DIECI,

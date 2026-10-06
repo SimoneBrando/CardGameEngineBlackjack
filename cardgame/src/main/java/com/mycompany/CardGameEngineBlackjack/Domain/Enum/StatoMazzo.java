@@ -1,6 +1,6 @@
 package com.mycompany.CardGameEngineBlackjack.Domain.Enum;
 
-public enum StatoMazzo {
+public enum statoMazzo {
     PRONTO,
     DA_MESCOLARE,
     ESAURITO
