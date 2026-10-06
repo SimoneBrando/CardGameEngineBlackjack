@@ -2,6 +2,6 @@ package com.mycompany.CardGameEngineBlackjack.TechnicalService;
 
 import com.mycompany.CardGameEngineBlackjack.Domain.*;
 
-public class giocatoreDAO extends genericDAO<Giocatore> {
-    public giocatoreDAO() { super(Giocatore.class); }
+public class partitaDAO extends genericDAO<Partita> {
+    public partitaDAO() { super(Partita.class); }
 }
