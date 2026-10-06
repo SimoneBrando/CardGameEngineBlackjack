@@ -43,5 +43,16 @@ public class Mazzo {
 
     public List<Carta> getCarte() { return carte; }
     public void setCarte(List<Carta> carte) { this.carte = carte; }
+
+
+
+    public Carta pescaCarta() {
+        if (carte == null || carte.isEmpty()) {
+            this.stato = statoMazzo.ESAURITO;
+            throw new IllegalStateException("Il mazzo è esaurito!");
+        }
+        // Rimuove e restituisce l'ultima carta della lista
+        return carte.remove(carte.size() - 1);
+    }
 }
 

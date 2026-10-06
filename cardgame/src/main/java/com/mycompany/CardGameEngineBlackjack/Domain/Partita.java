@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mycompany.CardGameEngineBlackjack.Application.Strategy.dealerStrategy;
+
 @Entity
 @Table(name = "partite")
 public class Partita {
@@ -77,4 +79,41 @@ public class Partita {
 
     public List<Mano> getMani() { return mani; }
     public void setMani(List<Mano> mani) { this.mani = mani; }
+
+
+    public void eseguiTurnoDealer(dealerStrategy strategy) {
+        Mano manoDealer = dealer.getMano();
+        
+        // Scopri la carta nascosta
+        for (Carta c : manoDealer.getCarte()) {
+            c.setCoperta(false);
+        }
+        
+        manoDealer.calcolaPunteggio();
+
+        // Finché la strategia impone di pescare, il banco estrae carte
+        while (strategy.devePescare(manoDealer.getPunteggio(), manoDealer.haAssoSoft())) {
+            manoDealer.aggiungiCarta(mazzo.pescaCarta());
+            manoDealer.calcolaPunteggio();
+            
+            if (manoDealer.getStatoMano() == statoMano.SBALLATA) {
+                break;
+            }
+        }
+    }
+
+    public void determinaEsitoPartita() {
+        Mano manoGiocatore = this.giocatore.getMani().get(0); // Assumendo che il giocatore abbia una sola mano
+        Mano manoDealer = this.dealer.getMano();
+
+        if (manoGiocatore.getPunteggio() > 21) {
+            this.esito = esitoPartita.VITTORIA_DEALER;
+        } else if (manoDealer.getPunteggio() > 21 || manoGiocatore.getPunteggio() > manoDealer.getPunteggio()) {
+            this.esito = esitoPartita.VITTORIA_GIOCATORE;
+        } else if (manoGiocatore.getPunteggio().equals(manoDealer.getPunteggio())) {
+            this.esito = esitoPartita.PAREGGIO;
+        } else {
+            this.esito = esitoPartita.IN_ATTESA;
+        }
+    }
 }

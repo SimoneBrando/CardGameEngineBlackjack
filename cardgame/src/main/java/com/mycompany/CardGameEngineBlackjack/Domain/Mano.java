@@ -84,4 +84,55 @@ public class Mano {
 
     public Puntata getPuntata() { return puntata; }
     public void setPuntata(Puntata puntata) { this.puntata = puntata; }
+
+
+
+
+    public void aggiungiCarta(Carta carta) {
+        this.carte.add(carta);
+    }
+
+
+    public int calcolaPunteggio() {
+        int totale = 0;
+        int assi = 0;
+
+        for (Carta c : carte) {
+            // L'Enum Rango va importato: com.mycompany.blackjack.domain.enums.Rango
+            if (c.getRango() == Rango.ASSO) {
+                assi++;
+                totale += 11; 
+            } else {
+                totale += c.getValoriPossibili().get(0);
+            }
+        }
+
+        // Declassa gli assi se il punteggio sballa
+        while (totale > 21 && assi > 0) {
+            totale -= 10;
+            assi--;
+        }
+
+        this.punteggio = totale;
+        
+        if (this.punteggio > 21) {
+            this.statoMano = statoMano.SBALLATA;
+        } else if (this.punteggio == 21 && carte.size() == 2) {
+            this.statoMano = statoMano.BLACKJACK;
+        }
+        
+        return totale;
+    }
+
+
+    public boolean haAssoSoft() {
+        // Un Asso è "soft" se vale 11 e non fa sballare la mano
+        int punteggioBase = 0;
+        boolean haAsso = false;
+        for (Carta c : carte) {
+            if (c.getRango() == Rango.ASSO) haAsso = true;
+            else punteggioBase += c.getValoriPossibili().get(0);
+        }
+        return haAsso && (punteggioBase + 11 <= 21);
+    }
 }
