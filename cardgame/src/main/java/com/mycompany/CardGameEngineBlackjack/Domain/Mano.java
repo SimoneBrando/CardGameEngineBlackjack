@@ -135,4 +135,12 @@ public class Mano {
         }
         return haAsso && (punteggioBase + 11 <= 21);
     }
+
+    public void scopriCartaCoperta() {
+        for (Carta c : this.carte) {
+            if (c.getCoperta()) {
+                c.setCoperta(false);
+            }
+        }
+    }
 }

@@ -222,6 +222,39 @@ public class Partita {
     }
 
 
+    public void aggiornaBilancioVincitore() {
+        Mano manoGiocatore = mani.get(0);
+        Mano manoDealer = dealer.getMano();
+        
+        int puntiGiocatore = manoGiocatore.getPunteggio();
+        int puntiDealer = manoDealer.getPunteggio();
+        int importoPuntata = manoGiocatore.getPuntata().getValoreTotale();
+
+        if (manoGiocatore.getStatoMano() == statoMano.SBALLATA) {
+            this.esito = esitoPartita.VITTORIA_DEALER;
+            // Il bilancio è già stato decurtato all'inizializzazione, non facciamo nulla.
+        } else if (manoDealer.getStatoMano() == statoMano.SBALLATA || puntiGiocatore > puntiDealer) {
+            this.esito = esitoPartita.VITTORIA_GIOCATORE;
+            // Paga 1:1 (restituisce la puntata + vincita equivalente)
+            int vincita = importoPuntata * 2;
+            
+            if (manoGiocatore.getStatoMano() == statoMano.BLACKJACK) {
+                // Paga 3:2 per il Blackjack naturale
+                vincita = importoPuntata + (int)(importoPuntata * 1.5);
+            }
+            giocatore.setBilancioFiches(giocatore.getBilancioFiches() + vincita);
+            
+        } else if (puntiGiocatore < puntiDealer) {
+            this.esito = esitoPartita.VITTORIA_DEALER;
+        } else {
+            this.esito = esitoPartita.PAREGGIO;
+            // Restituisce la puntata
+            giocatore.setBilancioFiches(giocatore.getBilancioFiches() + importoPuntata);
+        }
+        
+        this.stato = statoPartita.TERMINATA;
+    }
+
         
         
 }
