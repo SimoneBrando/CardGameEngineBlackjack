@@ -35,7 +35,7 @@ public class MainSeeder {
         dealerDao.save(dealer);
 
         // 3. Generazione del Mazzo con 52 Carte
-        Mazzo mazzo = new Mazzo(null, statoMazzo.PRONTO, 1);
+        Mazzo mazzo = new Mazzo();
         List<Carta> carteGenerate = new ArrayList<>();
 
         for (Seme seme : Seme.values()) {

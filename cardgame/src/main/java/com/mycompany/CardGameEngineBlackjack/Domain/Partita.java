@@ -80,6 +80,44 @@ public class Partita {
     public List<Mano> getMani() { return mani; }
     public void setMani(List<Mano> mani) { this.mani = mani; }
 
+    public void distribuisciCarteIniziali() {
+        if (mani.isEmpty() || dealer.getMano() == null) {
+            throw new IllegalStateException("Mani non inizializzate.");
+        }
+        
+        Mano manoGiocatore = mani.get(0);
+        Mano manoDealer = dealer.getMano();
+
+        manoGiocatore.aggiungiCarta(mazzo.pescaCarta());
+        manoGiocatore.aggiungiCarta(mazzo.pescaCarta());
+        manoGiocatore.calcolaPunteggio();
+
+        manoDealer.aggiungiCarta(mazzo.pescaCarta());
+        
+        // La seconda carta del dealer è inizialmente coperta
+        Carta cartaCoperta = mazzo.pescaCarta();
+        cartaCoperta.setCoperta(true);
+        manoDealer.aggiungiCarta(cartaCoperta);
+        manoDealer.calcolaPunteggio();
+
+        if (manoGiocatore.getStatoMano() == statoMano.BLACKJACK) {
+            this.stato = statoPartita.TERMINATA;
+            determinaEsitoPartita();
+        }
+    }
+
+    public void eseguiHitGiocatore() {
+        // Per ora gestiamo la singola mano (no split)
+        Mano manoGiocatore = mani.get(0); 
+        manoGiocatore.aggiungiCarta(mazzo.pescaCarta());
+        manoGiocatore.calcolaPunteggio();
+
+        if (manoGiocatore.getStatoMano() == statoMano.SBALLATA) {
+            this.stato = statoPartita.TERMINATA;
+            this.esito = esitoPartita.VITTORIA_DEALER;
+            // Il giocatore perde la puntata: non aggiungiamo nulla al bilancio
+        }
+    }
 
     public void eseguiTurnoDealer(dealerStrategy strategy) {
         Mano manoDealer = dealer.getMano();
@@ -103,17 +141,87 @@ public class Partita {
     }
 
     public void determinaEsitoPartita() {
-        Mano manoGiocatore = this.giocatore.getMani().get(0); // Assumendo che il giocatore abbia una sola mano
-        Mano manoDealer = this.dealer.getMano();
+        Mano manoGiocatore = mani.get(0);
+        Mano manoDealer = dealer.getMano();
+        
+        int puntiGiocatore = manoGiocatore.getPunteggio();
+        int puntiDealer = manoDealer.getPunteggio();
+        
+        // Ottieni l'importo della puntata effettuata
+        int importoPuntata = manoGiocatore.getPuntata().getValoreTotale();
 
-        if (manoGiocatore.getPunteggio() > 21) {
+        if (manoGiocatore.getStatoMano() == statoMano.SBALLATA) {
             this.esito = esitoPartita.VITTORIA_DEALER;
-        } else if (manoDealer.getPunteggio() > 21 || manoGiocatore.getPunteggio() > manoDealer.getPunteggio()) {
+        } else if (manoDealer.getStatoMano() == statoMano.SBALLATA) {
             this.esito = esitoPartita.VITTORIA_GIOCATORE;
-        } else if (manoGiocatore.getPunteggio().equals(manoDealer.getPunteggio())) {
-            this.esito = esitoPartita.PAREGGIO;
+            giocatore.setBilancioFiches(giocatore.getBilancioFiches() + (importoPuntata * 2));
+        } else if (puntiGiocatore > puntiDealer) {
+            this.esito = esitoPartita.VITTORIA_GIOCATORE;
+            // Vittoria con Blackjack paga 3:2, vittoria normale 1:1 (2x puntata in totale)
+            if (manoGiocatore.getStatoMano() == statoMano.BLACKJACK) {
+                giocatore.setBilancioFiches(giocatore.getBilancioFiches() + (int)(importoPuntata * 2.5));
+            } else {
+                giocatore.setBilancioFiches(giocatore.getBilancioFiches() + (importoPuntata * 2));
+            }
+        } else if (puntiGiocatore < puntiDealer) {
+            this.esito = esitoPartita.VITTORIA_DEALER;
         } else {
-            this.esito = esitoPartita.IN_ATTESA;
+            this.esito = esitoPartita.PAREGGIO;
+            // Restituisce la puntata originale
+            giocatore.setBilancioFiches(giocatore.getBilancioFiches() + importoPuntata);
         }
+        
+        this.stato = statoPartita.TERMINATA;
     }
+
+    
+    // Da aggiungere in com.mycompany.CardGameEngineBlackjack.Domain.Partita
+
+    public void inizializza(Giocatore giocatore, Integer importoPuntata) {
+        this.giocatore = giocatore;
+        this.stato = statoPartita.IN_CORSO;
+        this.turnoCorrente = Turno.GIOCATORE;
+        this.esito = esitoPartita.IN_ATTESA;
+
+        // SD: Game -> Deck : new()
+        this.mazzo = new Mazzo(); 
+        
+        // SD: Game -> Deck : mescola()
+        this.mazzo.mescola();
+
+        // SD: Game -> PlayerHand : new()
+        this.mani = new ArrayList<>();
+        Mano playerHand = new Mano();
+        playerHand.setPartita(this);
+        playerHand.setGiocatore(this.giocatore);
+        playerHand.setStatoMano(statoMano.IN_GIOCO);
+        this.mani.add(playerHand);
+
+        // SD: Game -> Bet : new(importo, mg)
+        Puntata puntata = new Puntata(); 
+        puntata.setValoreTotale(importoPuntata);
+        puntata.setMano(playerHand);
+        playerHand.setPuntata(puntata);
+
+        // SD: Game -> Game : detraiFichesGiocatore(importo)
+        this.detraiFichesGiocatore(importoPuntata);
+
+        // SD: Game -> DealerHand : new()
+        this.dealer = new Dealer();
+        Mano dealerHand = new Mano();
+        dealerHand.setPartita(this);
+        dealerHand.setDealer(this.dealer);
+        dealerHand.setStatoMano(statoMano.IN_GIOCO);
+        this.dealer.setMano(dealerHand);
+    }
+
+    // Metodo interno indicato nel diagramma per coerenza finanziaria
+    private void detraiFichesGiocatore(Integer importo) {
+        int bilancioAttuale = this.giocatore.getBilancioFiches();
+        this.giocatore.setBilancioFiches(bilancioAttuale - importo);
+    }
+
+
+        
+        
 }
