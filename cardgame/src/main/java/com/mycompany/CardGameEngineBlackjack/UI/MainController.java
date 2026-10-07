@@ -7,7 +7,9 @@ import com.mycompany.CardGameEngineBlackjack.Domain.Partita;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 public class MainController {
 
@@ -135,40 +137,99 @@ public class MainController {
         }
     }
 
-    private Label creaCartaLabel(Carta carta) {
-        Label label;
-        String coloreTesto = "black";
+    private VBox creaCartaLabel(Carta carta) {
+
+        VBox cartaBox = new VBox();
+
+        cartaBox.setPrefSize(78, 108);
+        cartaBox.setMinSize(78, 108);
+        cartaBox.setMaxSize(78, 108);
+
+        cartaBox.setAlignment(Pos.CENTER);
+
+        // =========================================================
+        // CARTA COPERTA
+        // =========================================================
 
         if (carta.getCoperta()) {
-            label = new Label("🂠");
-            coloreTesto = "#1e3a8a"; // Blu scuro per il dorso della carta
-        } else {
-            String simboloSeme = getSimboloSeme(carta);
-            String nomeRango = carta.getRango().toString();
-            label = new Label(nomeRango + "\n" + simboloSeme);
-            
-            // Assegna il colore rosso ai semi corrispondenti
-            if (simboloSeme.equals("♥") || simboloSeme.equals("♦")) {
-                coloreTesto = "#dc2626"; // Rosso scuro
-            }
+
+            Label dorso = new Label("♠");
+
+            dorso.setFont(Font.font("Arial", 32));
+            dorso.setTextFill(javafx.scene.paint.Color.WHITE);
+
+            dorso.setAlignment(Pos.CENTER);
+
+            cartaBox.getChildren().add(dorso);
+
+            cartaBox.setStyle(
+                    "-fx-background-color: #173b8f;" +
+                    "-fx-background-radius: 10;" +
+                    "-fx-border-color: #d4af37;" +
+                    "-fx-border-width: 2;" +
+                    "-fx-border-radius: 10;" +
+                    "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 8, 0.2, 0, 3);"
+            );
+
+            return cartaBox;
         }
 
-        label.setMinSize(70, 100);
-        label.setPrefSize(70, 100);
-        label.setAlignment(Pos.CENTER);
+        // =========================================================
+        // CARTA SCOPERTA
+        // =========================================================
 
-        label.setStyle(
-                "-fx-background-color: white;" +
-                "-fx-background-radius: 8;" +
-                "-fx-border-color: black;" +
-                "-fx-border-radius: 8;" +
-                "-fx-border-width: 1;" +
-                "-fx-font-size: 18px;" +
-                "-fx-text-fill: " + coloreTesto + ";" // Applica il colore calcolato
+        String simboloSeme = getSimboloSeme(carta);
+        String nomeRango = getValoreRango(carta);
+
+        boolean rossa =
+                simboloSeme.equals("♥") ||
+                simboloSeme.equals("♦");
+
+        String colore = rossa ? "#c62828" : "#151515";
+
+        // Valore della carta
+        Label valore = new Label(nomeRango);
+
+        valore.setFont(
+                Font.font("Arial", FontWeight.BOLD, 18)
         );
 
-        label.setFont(Font.font("Arial", 18));
-        return label;
+        valore.setTextFill(
+                javafx.scene.paint.Color.web(colore)
+        );
+
+        // Seme
+        Label seme = new Label(simboloSeme);
+
+        seme.setFont(
+                Font.font("Arial", FontWeight.BOLD, 36)
+        );
+
+        seme.setTextFill(
+                javafx.scene.paint.Color.web(colore)
+        );
+
+        // =========================================================
+        // DISPOSIZIONE
+        // =========================================================
+
+        cartaBox.setSpacing(2);
+
+        cartaBox.getChildren().addAll(
+                valore,
+                seme
+        );
+
+        cartaBox.setStyle(
+                "-fx-background-color: #ffffff;" +
+                "-fx-background-radius: 10;" +
+                "-fx-border-color: #d6d6d6;" +
+                "-fx-border-width: 1;" +
+                "-fx-border-radius: 10;" +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 8, 0.2, 0, 3);"
+        );
+
+        return cartaBox;
     }
 
     private String getSimboloSeme(Carta carta) {
@@ -216,6 +277,54 @@ public class MainController {
                 break;
             default:
                 view.getMessaggioLabel().setText(partitaCorrente.getEsito().toString());
+        }
+    }
+
+    private String getValoreRango(Carta carta) {
+
+        switch (carta.getRango().toString().toUpperCase()) {
+
+            case "ASSO":
+                return "A";
+
+            case "DUE":
+                return "2";
+
+            case "TRE":
+                return "3";
+
+            case "QUATTRO":
+                return "4";
+
+            case "CINQUE":
+                return "5";
+
+            case "SEI":
+                return "6";
+
+            case "SETTE":
+                return "7";
+
+            case "OTTO":
+                return "8";
+
+            case "NOVE":
+                return "9";
+
+            case "DIECI":
+                return "10";
+
+            case "JACK":
+                return "J";
+
+            case "REGINA":
+                return "Q";
+
+            case "RE":
+                return "K";
+
+            default:
+                return carta.getRango().toString();
         }
     }
 

@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -26,6 +27,7 @@ public class MainView {
 
     private final Label saldoLabel;
     private final Label puntataLabel;
+
     private final Label messaggioLabel;
 
     private final Button nuovaPartitaButton;
@@ -34,114 +36,435 @@ public class MainView {
 
     public MainView() {
 
-        root = new VBox(20);
-        root.setAlignment(Pos.CENTER);
-        root.setPadding(new Insets(30)); // Aggiunto margine per distanziare gli elementi dai bordi
-        root.setStyle("-fx-background-color: #176B3A;"); // Verde tipico dei tavoli da casinò
+        // =========================================================
+        // ROOT
+        // =========================================================
 
-        titolo = new Label("BLACKJACK ENGINE");
-        titolo.setFont(Font.font("Arial", FontWeight.BOLD, 32));
+        root = new VBox(18);
+
+        root.setAlignment(Pos.TOP_CENTER);
+
+        root.setPadding(
+                new Insets(28, 45, 28, 45)
+        );
+
+        root.setStyle(
+                "-fx-background-color: #073b2a;"
+        );
+
+        // =========================================================
+        // TITOLO
+        // =========================================================
+
+        titolo = new Label("BLACKJACK");
+
+        titolo.setFont(
+                Font.font("Arial", FontWeight.BOLD, 38)
+        );
+
         titolo.setTextFill(Color.WHITE);
 
-        // --- SEZIONE DEALER ---
-        dealerLabel = new Label("DEALER");
-        dealerLabel.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-        dealerLabel.setTextFill(Color.WHITE);
+        titolo.setStyle(
+                "-fx-letter-spacing: 5px;"
+        );
 
-        dealerCarte = new HBox(15);
+        // =========================================================
+        // DEALER
+        // =========================================================
+
+        dealerLabel = creaTitoloSezione("DEALER");
+
+        dealerCarte = new HBox(16);
+
         dealerCarte.setAlignment(Pos.CENTER);
-        dealerCarte.setMinHeight(100); // Mantiene lo spazio anche quando vuoto
 
-        dealerPunteggio = new Label("Punteggio: -");
-        dealerPunteggio.setFont(Font.font("Arial", 16));
-        dealerPunteggio.setTextFill(Color.WHITE);
+        dealerCarte.setMinHeight(118);
 
-        // --- SEZIONE GIOCATORE ---
-        giocatoreLabel = new Label("GIOCATORE");
-        giocatoreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-        giocatoreLabel.setTextFill(Color.WHITE);
+        dealerPunteggio = creaPunteggio("Punteggio: -");
 
-        giocatoreCarte = new HBox(15);
+        VBox sezioneDealer = creaSezioneGioco(
+                dealerLabel,
+                dealerCarte,
+                dealerPunteggio
+        );
+
+        // =========================================================
+        // SEPARATORE
+        // =========================================================
+
+        Label separatore = new Label("♦");
+
+        separatore.setFont(
+                Font.font("Arial", FontWeight.BOLD, 14)
+        );
+
+        separatore.setTextFill(
+                Color.rgb(210, 170, 70)
+        );
+
+        // =========================================================
+        // GIOCATORE
+        // =========================================================
+
+        giocatoreLabel = creaTitoloSezione("GIOCATORE");
+
+        giocatoreCarte = new HBox(16);
+
         giocatoreCarte.setAlignment(Pos.CENTER);
-        giocatoreCarte.setMinHeight(100);
 
-        giocatorePunteggio = new Label("Punteggio: -");
-        giocatorePunteggio.setFont(Font.font("Arial", 16));
-        giocatorePunteggio.setTextFill(Color.WHITE);
+        giocatoreCarte.setMinHeight(118);
 
-        // --- SEZIONE FINANZIARIA ---
-        saldoLabel = new Label("Saldo: -");
-        saldoLabel.setFont(Font.font("Arial", 16));
-        saldoLabel.setTextFill(Color.LIGHTYELLOW);
+        giocatorePunteggio = creaPunteggio("Punteggio: -");
 
-        puntataLabel = new Label("Puntata: -");
-        puntataLabel.setFont(Font.font("Arial", 16));
-        puntataLabel.setTextFill(Color.LIGHTYELLOW);
+        VBox sezioneGiocatore = creaSezioneGioco(
+                giocatoreLabel,
+                giocatoreCarte,
+                giocatorePunteggio
+        );
 
-        // Raggruppate sulla stessa riga
-        HBox infoFinanziarie = new HBox(40);
+        // =========================================================
+        // INFORMAZIONI FINANZIARIE
+        // =========================================================
+
+        saldoLabel = creaInfoLabel(
+                "SALDO",
+                "-"
+        );
+
+        puntataLabel = creaInfoLabel(
+                "PUNTATA",
+                "-"
+        );
+
+        HBox infoFinanziarie = new HBox(18);
+
         infoFinanziarie.setAlignment(Pos.CENTER);
-        infoFinanziarie.getChildren().addAll(saldoLabel, puntataLabel);
 
-        // --- SEZIONE AZIONI E MESSAGGI ---
+        VBox saldoBox = creaBoxFinanziario(
+                saldoLabel
+        );
+
+        VBox puntataBox = creaBoxFinanziario(
+                puntataLabel
+        );
+
+        infoFinanziarie.getChildren().addAll(
+                saldoBox,
+                puntataBox
+        );
+
+        // =========================================================
+        // MESSAGGIO
+        // =========================================================
+
         messaggioLabel = new Label("");
-        messaggioLabel.setFont(Font.font("Arial", FontWeight.BOLD, 22));
-        messaggioLabel.setTextFill(Color.GOLD);
 
-        nuovaPartitaButton = creaPulsanteStilizzato("NUOVA PARTITA");
-        hitButton = creaPulsanteStilizzato("HIT");
-        standButton = creaPulsanteStilizzato("STAND");
+        messaggioLabel.setFont(
+                Font.font("Arial", FontWeight.BOLD, 20)
+        );
+
+        messaggioLabel.setTextFill(
+                Color.rgb(239, 199, 72)
+        );
+
+        messaggioLabel.setAlignment(Pos.CENTER);
+
+        messaggioLabel.setMinHeight(30);
+
+        // =========================================================
+        // PULSANTI
+        // =========================================================
+
+        nuovaPartitaButton = creaPulsante(
+                "NUOVA PARTITA",
+                "#b88a20",
+                "#d4aa3a"
+        );
+
+        hitButton = creaPulsante(
+                "HIT",
+                "#176b45",
+                "#218b5a"
+        );
+
+        standButton = creaPulsante(
+                "STAND",
+                "#8c3030",
+                "#ae3d3d"
+        );
 
         hitButton.setDisable(true);
         standButton.setDisable(true);
 
-        HBox azioni = new HBox(20);
-        azioni.setAlignment(Pos.CENTER);
-        azioni.getChildren().addAll(nuovaPartitaButton, hitButton, standButton);
+        HBox azioni = new HBox(14);
 
-        // --- ASSEMBLAGGIO ROOT ---
+        azioni.setAlignment(Pos.CENTER);
+
+        azioni.getChildren().addAll(
+                nuovaPartitaButton,
+                hitButton,
+                standButton
+        );
+
+        // =========================================================
+        // ASSEMBLAGGIO
+        // =========================================================
+
         root.getChildren().addAll(
                 titolo,
-                dealerLabel,
-                dealerCarte,
-                dealerPunteggio,
-                giocatoreLabel,
-                giocatoreCarte,
-                giocatorePunteggio,
+                sezioneDealer,
+                separatore,
+                sezioneGiocatore,
                 infoFinanziarie,
-                azioni,
-                messaggioLabel
+                messaggioLabel,
+                azioni
         );
     }
 
-    // Metodo privato per standardizzare il design dei bottoni
-    private Button creaPulsanteStilizzato(String testo) {
+    // =============================================================
+    // SEZIONE DI GIOCO
+    // =============================================================
+
+    private VBox creaSezioneGioco(
+            Label titoloSezione,
+            HBox carte,
+            Label punteggio
+    ) {
+
+        VBox sezione = new VBox(9);
+
+        sezione.setAlignment(Pos.CENTER);
+
+        sezione.setPadding(
+                new Insets(13, 25, 13, 25)
+        );
+
+        sezione.setMaxWidth(850);
+
+        sezione.setStyle(
+                "-fx-background-color: #0a4934;" +
+                "-fx-background-radius: 16;" +
+                "-fx-border-color: #176b4a;" +
+                "-fx-border-width: 1;" +
+                "-fx-border-radius: 16;"
+        );
+
+        VBox.setVgrow(carte, Priority.NEVER);
+
+        sezione.getChildren().addAll(
+                titoloSezione,
+                carte,
+                punteggio
+        );
+
+        return sezione;
+    }
+
+    // =============================================================
+    // TITOLO DEALER / GIOCATORE
+    // =============================================================
+
+    private Label creaTitoloSezione(String testo) {
+
+        Label label = new Label(testo);
+
+        label.setFont(
+                Font.font("Arial", FontWeight.BOLD, 16)
+        );
+
+        label.setTextFill(
+                Color.rgb(235, 235, 235)
+        );
+
+        label.setStyle(
+                "-fx-letter-spacing: 2px;"
+        );
+
+        return label;
+    }
+
+    // =============================================================
+    // PUNTEGGIO
+    // =============================================================
+
+    private Label creaPunteggio(String testo) {
+
+        Label label = new Label(testo);
+
+        label.setFont(
+                Font.font("Arial", FontWeight.BOLD, 14)
+        );
+
+        label.setTextFill(Color.WHITE);
+
+        label.setPadding(
+                new Insets(5, 14, 5, 14)
+        );
+
+        label.setStyle(
+                "-fx-background-color: #116044;" +
+                "-fx-background-radius: 20;" +
+                "-fx-border-color: #1d7655;" +
+                "-fx-border-radius: 20;"
+        );
+
+        return label;
+    }
+
+    // =============================================================
+    // INFORMAZIONI FINANZIARIE
+    // =============================================================
+
+    private Label creaInfoLabel(
+            String titoloInfo,
+            String valore
+    ) {
+
+        Label label = new Label(
+                titoloInfo + "  " + valore
+        );
+
+        label.setFont(
+                Font.font("Arial", FontWeight.BOLD, 14)
+        );
+
+        label.setTextFill(Color.WHITE);
+
+        return label;
+    }
+
+    private VBox creaBoxFinanziario(Label label) {
+
+        VBox box = new VBox();
+
+        box.setAlignment(Pos.CENTER);
+
+        box.setMinWidth(185);
+
+        box.setMinHeight(48);
+
+        box.setPadding(
+                new Insets(8, 22, 8, 22)
+        );
+
+        box.setStyle(
+                "-fx-background-color: #0a3025;" +
+                "-fx-background-radius: 10;" +
+                "-fx-border-color: #175540;" +
+                "-fx-border-width: 1;" +
+                "-fx-border-radius: 10;"
+        );
+
+        box.getChildren().add(label);
+
+        return box;
+    }
+
+    // =============================================================
+    // PULSANTI
+    // =============================================================
+
+    private Button creaPulsante(
+            String testo,
+            String colore,
+            String coloreHover
+    ) {
+
         Button btn = new Button(testo);
-        btn.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+
+        btn.setFont(
+                Font.font("Arial", FontWeight.BOLD, 13)
+        );
+
+        btn.setTextFill(Color.WHITE);
+
+        btn.setMinWidth(135);
+
+        btn.setMinHeight(42);
+
+        btn.setFocusTraversable(false);
+
         btn.setStyle(
-                "-fx-background-color: #333333;" +
-                "-fx-text-fill: white;" +
-                "-fx-background-radius: 5;" +
-                "-fx-padding: 10 20 10 20;" +
+                "-fx-background-color: " + colore + ";" +
+                "-fx-background-radius: 9;" +
+                "-fx-border-radius: 9;" +
                 "-fx-cursor: hand;"
         );
-        
-        // Effetto Hover di base
-        btn.setOnMouseEntered(e -> btn.setStyle("-fx-background-color: #555555; -fx-text-fill: white; -fx-background-radius: 5; -fx-padding: 10 20 10 20; -fx-cursor: hand;"));
-        btn.setOnMouseExited(e -> btn.setStyle("-fx-background-color: #333333; -fx-text-fill: white; -fx-background-radius: 5; -fx-padding: 10 20 10 20; -fx-cursor: hand;"));
-        
+
+        btn.setOnMouseEntered(event -> {
+
+            if (!btn.isDisabled()) {
+
+                btn.setStyle(
+                        "-fx-background-color: " + coloreHover + ";" +
+                        "-fx-background-radius: 9;" +
+                        "-fx-border-radius: 9;" +
+                        "-fx-cursor: hand;"
+                );
+            }
+        });
+
+        btn.setOnMouseExited(event -> {
+
+            if (!btn.isDisabled()) {
+
+                btn.setStyle(
+                        "-fx-background-color: " + colore + ";" +
+                        "-fx-background-radius: 9;" +
+                        "-fx-border-radius: 9;" +
+                        "-fx-cursor: hand;"
+                );
+            }
+        });
+
         return btn;
     }
 
-    public VBox getRoot() { return root; }
-    public Label getDealerPunteggio() { return dealerPunteggio; }
-    public HBox getDealerCarte() { return dealerCarte; }
-    public Label getGiocatorePunteggio() { return giocatorePunteggio; }
-    public HBox getGiocatoreCarte() { return giocatoreCarte; }
-    public Label getSaldoLabel() { return saldoLabel; }
-    public Label getPuntataLabel() { return puntataLabel; }
-    public Label getMessaggioLabel() { return messaggioLabel; }
-    public Button getNuovaPartitaButton() { return nuovaPartitaButton; }
-    public Button getHitButton() { return hitButton; }
-    public Button getStandButton() { return standButton; }
+    // =============================================================
+    // GETTERS
+    // =============================================================
+
+    public VBox getRoot() {
+        return root;
+    }
+
+    public Label getDealerPunteggio() {
+        return dealerPunteggio;
+    }
+
+    public HBox getDealerCarte() {
+        return dealerCarte;
+    }
+
+    public Label getGiocatorePunteggio() {
+        return giocatorePunteggio;
+    }
+
+    public HBox getGiocatoreCarte() {
+        return giocatoreCarte;
+    }
+
+    public Label getSaldoLabel() {
+        return saldoLabel;
+    }
+
+    public Label getPuntataLabel() {
+        return puntataLabel;
+    }
+
+    public Label getMessaggioLabel() {
+        return messaggioLabel;
+    }
+
+    public Button getNuovaPartitaButton() {
+        return nuovaPartitaButton;
+    }
+
+    public Button getHitButton() {
+        return hitButton;
+    }
+
+    public Button getStandButton() {
+        return standButton;
+    }
 }
