@@ -26,44 +26,51 @@ public class blackjackGameController {
             throw new IllegalArgumentException("Fiches insufficienti per la puntata.");
         }
 
-        // Deleghiamo al Dominio (Pattern Creator) la costruzione di mazzo, mani e puntata
         Partita partita = new Partita();
         partita.inizializza(giocatore, importoPuntata);
-        
         partita.distribuisciCarteIniziali();
         
-        partitaDao.save(partita);
+        // Salviamo il giocatore PRIMA della partita per consolidare le detrazioni o vincite immediate (es. Blackjack)
+        giocatoreDao.update(giocatore);
+        
+        partita = partitaDao.save(partita);
         return partita;
     }
 
     public Partita effettuaHit(Long idPartita) {
         Partita partita = partitaDao.findById(idPartita);
         
-        if (partita.getStato() != statoPartita.IN_CORSO) {
+        if (partita.getStato() != com.mycompany.CardGameEngineBlackjack.Domain.Enum.statoPartita.IN_CORSO) {
             throw new IllegalStateException("La partita non è in corso.");
         }
 
         partita.eseguiHitGiocatore();
-        partitaDao.update(partita);
         
+        // Se l'Hit fa sballare il giocatore, la partita termina. Aggiorniamo il bilancio sul DB.
+        if (partita.getStato() == com.mycompany.CardGameEngineBlackjack.Domain.Enum.statoPartita.TERMINATA) {
+            giocatoreDao.update(partita.getGiocatore());
+        }
+        
+        partita = partitaDao.update(partita);
         return partita;
     }
 
     public Partita effettuaStand(Long idPartita) {
         Partita partita = partitaDao.findById(idPartita);
         
-        if (partita.getStato() != statoPartita.IN_CORSO) {
+        if (partita.getStato() != com.mycompany.CardGameEngineBlackjack.Domain.Enum.statoPartita.IN_CORSO) {
             throw new IllegalStateException("La partita non è in corso.");
         }
 
-        // Il Controller usa il pattern Pure Fabrication per ottenere la strategia
-        dealerStrategy strategy = strategyFactory.getDealerStrategy("Standard17");
+        com.mycompany.CardGameEngineBlackjack.Application.Strategy.dealerStrategy strategy = strategyFactory.getDealerStrategy("Standard17");
         
-        // Passa la strategia al dominio affinché il Dealer giochi il suo turno
         partita.eseguiTurnoDealer(strategy);
         partita.determinaEsitoPartita();
         
-        partitaDao.update(partita);
+        // Lo Stand chiude sempre la partita. Aggiorniamo il portafoglio consolidando vittorie/sconfitte.
+        giocatoreDao.update(partita.getGiocatore());
+        
+        partita = partitaDao.update(partita);
         return partita;
     }
 

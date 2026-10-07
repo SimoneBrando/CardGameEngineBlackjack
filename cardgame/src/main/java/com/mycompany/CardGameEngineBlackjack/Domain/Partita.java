@@ -32,16 +32,33 @@ public class Partita {
     @JoinColumn(name = "id_giocatore", nullable = false)
     private Giocatore giocatore;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_dealer", nullable = false)
-    private Dealer dealer;
+    /* 
+     * FETCH TYPE EAGER vs LAZY:
+     * Di default, le relazioni @OneToMany sono di tipo LAZY (pigre). Questo significa che 
+     * Hibernate carica dal DB solo i dati della Partita, inserendo al posto della lista 
+     * un "Proxy" vuoto per risparmiare memoria. Quando il codice chiama mani.get(0), 
+     * il Proxy tenta di fare una nuova query al DB per scaricare i dati.
+     * Tuttavia, poiché il nostro GenericDao usa il costrutto "try-with-resources", 
+     * la Sessione del database viene chiusa un istante dopo il findById(). 
+     * Trovando la connessione chiusa, il Proxy va in crash (LazyInitializationException).
+     * 
+     * Impostando fetch = FetchType.EAGER (avido), costringiamo Hibernate a fare una 
+     * query con una JOIN immediata. In questo modo scarica l'intero blocco di dati 
+     * (Partita + Mani) in un colpo solo, caricandolo nella RAM mentre la Sessione 
+     * è ancora aperta.
+     */
+    @OneToMany(mappedBy = "partita", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Mano> mani = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    // Le relazioni @OneToOne sono già EAGER di default, ma è buona norma esplicitarlo
+    // per chiarezza architetturale se si vuole il caricamento immediato.
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "id_mazzo", nullable = false)
     private Mazzo mazzo;
 
-    @OneToMany(mappedBy = "partita", cascade = CascadeType.ALL)
-    private List<Mano> mani = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_dealer", nullable = false)
+    private Dealer dealer;
 
     public Partita() {}
 
@@ -85,7 +102,8 @@ public class Partita {
             throw new IllegalStateException("Mani non inizializzate.");
         }
         
-        Mano manoGiocatore = mani.get(0);
+        // Usa il nuovo metodo invece di mani.get(0)
+        Mano manoGiocatore = getManoGiocatore();
         Mano manoDealer = dealer.getMano();
 
         manoGiocatore.aggiungiCarta(mazzo.pescaCarta());
@@ -94,7 +112,6 @@ public class Partita {
 
         manoDealer.aggiungiCarta(mazzo.pescaCarta());
         
-        // La seconda carta del dealer è inizialmente coperta
         Carta cartaCoperta = mazzo.pescaCarta();
         cartaCoperta.setCoperta(true);
         manoDealer.aggiungiCarta(cartaCoperta);
@@ -107,15 +124,14 @@ public class Partita {
     }
 
     public void eseguiHitGiocatore() {
-        // Per ora gestiamo la singola mano (no split)
-        Mano manoGiocatore = mani.get(0); 
+        // Usa il nuovo metodo
+        Mano manoGiocatore = getManoGiocatore(); 
         manoGiocatore.aggiungiCarta(mazzo.pescaCarta());
         manoGiocatore.calcolaPunteggio();
 
         if (manoGiocatore.getStatoMano() == statoMano.SBALLATA) {
             this.stato = statoPartita.TERMINATA;
             this.esito = esitoPartita.VITTORIA_DEALER;
-            // Il giocatore perde la puntata: non aggiungiamo nulla al bilancio
         }
     }
 
@@ -140,39 +156,37 @@ public class Partita {
         }
     }
 
-    public void determinaEsitoPartita() {
-        Mano manoGiocatore = mani.get(0);
+   public void determinaEsitoPartita() {
+        // Usa il nuovo metodo
+        Mano manoGiocatore = getManoGiocatore();
         Mano manoDealer = dealer.getMano();
         
         int puntiGiocatore = manoGiocatore.getPunteggio();
         int puntiDealer = manoDealer.getPunteggio();
         
-        // Ottieni l'importo della puntata effettuata
         int importoPuntata = manoGiocatore.getPuntata().getValoreTotale();
 
         if (manoGiocatore.getStatoMano() == statoMano.SBALLATA) {
             this.esito = esitoPartita.VITTORIA_DEALER;
-        } else if (manoDealer.getStatoMano() == statoMano.SBALLATA) {
+        } else if (manoDealer.getStatoMano() == statoMano.SBALLATA || puntiGiocatore > puntiDealer) {
             this.esito = esitoPartita.VITTORIA_GIOCATORE;
-            giocatore.setBilancioFiches(giocatore.getBilancioFiches() + (importoPuntata * 2));
-        } else if (puntiGiocatore > puntiDealer) {
-            this.esito = esitoPartita.VITTORIA_GIOCATORE;
-            // Vittoria con Blackjack paga 3:2, vittoria normale 1:1 (2x puntata in totale)
+            int vincita = importoPuntata * 2;
+            
             if (manoGiocatore.getStatoMano() == statoMano.BLACKJACK) {
-                giocatore.setBilancioFiches(giocatore.getBilancioFiches() + (int)(importoPuntata * 2.5));
-            } else {
-                giocatore.setBilancioFiches(giocatore.getBilancioFiches() + (importoPuntata * 2));
+                vincita = importoPuntata + (int)(importoPuntata * 1.5);
             }
+            giocatore.setBilancioFiches(giocatore.getBilancioFiches() + vincita);
+            
         } else if (puntiGiocatore < puntiDealer) {
             this.esito = esitoPartita.VITTORIA_DEALER;
         } else {
             this.esito = esitoPartita.PAREGGIO;
-            // Restituisce la puntata originale
             giocatore.setBilancioFiches(giocatore.getBilancioFiches() + importoPuntata);
         }
         
         this.stato = statoPartita.TERMINATA;
     }
+    
 
     
     // Da aggiungere in com.mycompany.CardGameEngineBlackjack.Domain.Partita
@@ -253,6 +267,17 @@ public class Partita {
         }
         
         this.stato = statoPartita.TERMINATA;
+    }
+
+
+    private Mano getManoGiocatore() {
+        for (Mano m : this.mani) {
+            // La mano del giocatore è l'unica ad avere l'entità Giocatore valorizzata
+            if (m.getGiocatore() != null) {
+                return m;
+            }
+        }
+        throw new IllegalStateException("Mano del giocatore non trovata nella partita.");
     }
 
         

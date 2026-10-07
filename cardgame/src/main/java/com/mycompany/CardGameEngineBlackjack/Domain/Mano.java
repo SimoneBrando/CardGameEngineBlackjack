@@ -36,7 +36,16 @@ public class Mano {
     @JoinColumn(name = "id_dealer") // Nullable perché potrebbe essere del Giocatore
     private Dealer dealer;
 
-    @ManyToMany
+    /*
+     * Anche la relazione ManyToMany con le carte è LAZY di default. 
+     * Quando il livello Application chiama mano.calcolaPunteggio(), il Dominio 
+     * ha bisogno di scorrere la lista delle carte per sommare i valori. 
+     * Usando EAGER garantiamo che, non appena viene caricata una Mano, vengano
+     * scaricate istantaneamente anche tutte le carte ad essa associate.
+     * I cascade PERSIST e MERGE assicurano invece che le nuove carte pescate
+     * vengano salvate automaticamente all'aggiornamento della mano.
+     */
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
         name = "mano_carta",
         joinColumns = @JoinColumn(name = "id_mano"),

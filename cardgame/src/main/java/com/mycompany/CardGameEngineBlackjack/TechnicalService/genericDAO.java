@@ -14,37 +14,45 @@ public class genericDAO<T> {
         this.type = type;
     }
 
-    public void save(T entity) {
-            // La sessione si chiude automaticamente alla fine del blocco principale
-            try (Session session = persistentManager.getSessionFactory().openSession()) {
-                Transaction transaction = session.beginTransaction();
-                try {
-                    // Usiamo merge al posto di persist. Gestisce perfettamente le entità 
-                    // "detached" che hai già salvato (come il Mazzo e il Dealer nel Seeder)
-                    session.merge(entity);
-                    transaction.commit();
-                } catch (Exception e) {
-                    // Il rollback ora avviene MENTRE la sessione è ancora aperta
-                    if (transaction != null && transaction.isActive()) {
-                        transaction.rollback();
-                    }
-                    // Stampa il VERO errore
-                    e.printStackTrace(); 
+
+    public T save(T entity) {
+        try (Session session = persistentManager.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                // Catturiamo l'oggetto unito (merged) che contiene l'ID
+                T savedEntity = session.merge(entity);
+                transaction.commit();
+                return savedEntity; // Restituiamo l'oggetto completo
+            } catch (Exception e) {
+                if (transaction != null && transaction.isActive()) {
+                    transaction.rollback();
                 }
+                throw new RuntimeException("Errore durante il salvataggio", e);
             }
         }
+    }
 
-    public void update(T entity) {
-        Transaction transaction = null;
+    public T update(T entity) {
         try (Session session = persistentManager.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            session.merge(entity);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace();
+            Transaction transaction = session.beginTransaction();
+            try {
+                T updatedEntity = session.merge(entity);
+                transaction.commit();
+                return updatedEntity;
+            } catch (Exception e) {
+                if (transaction != null && transaction.isActive()) {
+                    transaction.rollback();
+                }
+                throw new RuntimeException("Errore durante l'aggiornamento", e);
+            }
         }
     }
+
+
+
+
+
+
 
     public void delete(T entity) {
         Transaction transaction = null;

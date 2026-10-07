@@ -22,7 +22,9 @@ public class Mazzo {
     @Column(name = "numero_mazzi", nullable = false)
     private Integer numeroMazzi;
 
-    @OneToMany(mappedBy = "mazzo", cascade = CascadeType.ALL)
+
+    // Aggiungi fetch = FetchType.EAGER per caricare le carte insieme al mazzo
+    @OneToMany(mappedBy = "mazzo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Carta> carte = new ArrayList<>();
 
     public Mazzo() {

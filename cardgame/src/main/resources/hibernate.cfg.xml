@@ -12,8 +12,8 @@
 
         <!-- Dialetto e impostazioni -->
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-        <property name="hibernate.show_sql">true</property>
-        <property name="hibernate.format_sql">true</property>
+        <property name="hibernate.show_sql">false</property>
+        <property name="hibernate.format_sql">false</property>
         
         <!-- create-drop per testare, update per mantenere i dati -->
         <property name="hibernate.hbm2ddl.auto">update</property>

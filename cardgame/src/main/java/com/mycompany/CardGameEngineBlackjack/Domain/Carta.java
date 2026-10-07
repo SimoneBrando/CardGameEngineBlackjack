@@ -25,7 +25,7 @@ public class Carta {
     @Column(name = "coperta", nullable = false)
     private Boolean coperta;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "carta_valori", joinColumns = @JoinColumn(name = "id_carta"))
     @Column(name = "valore")
     private List<Integer> valoriPossibili = new ArrayList<>();
