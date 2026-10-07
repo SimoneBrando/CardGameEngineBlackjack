@@ -59,8 +59,13 @@ public class Mazzo {
             this.stato = statoMazzo.ESAURITO;
             throw new IllegalStateException("Il mazzo è esaurito!");
         }
-        // Rimuove e restituisce l'ultima carta della lista
-        return carte.remove(carte.size() - 1);
+
+
+        Carta cartaPescata = carte.remove(carte.size() - 1);
+        // SCOLLEGA LA CARTA DAL MAZZO PER IL DATABASE
+        cartaPescata.setMazzo(null); 
+        
+        return cartaPescata;
     }
 
 
@@ -89,5 +94,8 @@ public class Mazzo {
     public void mescola() {
         java.util.Collections.shuffle(this.carte);
     }
+
+
+    
 }
 

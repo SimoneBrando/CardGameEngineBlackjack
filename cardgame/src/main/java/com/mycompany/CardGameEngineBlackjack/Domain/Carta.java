@@ -31,7 +31,7 @@ public class Carta {
     private List<Integer> valoriPossibili = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "id_mazzo", nullable = false)
+    @JoinColumn(name = "id_mazzo", nullable = true)
     private Mazzo mazzo;
 
     public Carta() {}
@@ -63,4 +63,17 @@ public class Carta {
 
     public Mazzo getMazzo() { return mazzo; }
     public void setMazzo(Mazzo mazzo) { this.mazzo = mazzo; }
+
+
+
+
+
+
+    @Override
+    public String toString() {
+        if (this.coperta) {
+            return "[CARTA COPERTA]";
+        }
+        return "[" + this.rango + " di " + this.seme + "]";
+    }
 }

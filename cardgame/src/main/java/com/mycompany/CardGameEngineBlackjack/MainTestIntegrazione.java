@@ -1,9 +1,7 @@
 package com.mycompany.CardGameEngineBlackjack;
 
 import com.mycompany.CardGameEngineBlackjack.Application.blackjackGameController;
-import com.mycompany.CardGameEngineBlackjack.Domain.Partita;
-import com.mycompany.CardGameEngineBlackjack.Domain.Mano;
-import com.mycompany.CardGameEngineBlackjack.Domain.Carta;
+import com.mycompany.CardGameEngineBlackjack.Domain.*;
 
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -25,6 +23,9 @@ public class MainTestIntegrazione {
         Partita partita = controller.avviaNuovaPartita(1L, importoDaPuntare);
         
         System.out.println("\nID Partita: " + partita.getId());
+
+        Mazzo mazzo = partita.getMazzo();
+        System.out.println("Mazzo:" + mazzo.getCarte().toString());
         
         // Estraiamo le mani in modo sicuro
         Mano manoGiocatore = getManoGiocatore(partita);
