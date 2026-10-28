@@ -1,43 +1,23 @@
 package com.mycompany.CardGameEngineBlackjack.Domain;
 
 import com.mycompany.CardGameEngineBlackjack.Domain.Enum.*;
-import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "carte")
+
 public class Carta {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_carta")
-    private Long id;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "seme", nullable = false)
+   
     private Seme seme;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "rango", nullable = false)
     private Rango rango;
-
-    @Column(name = "coperta", nullable = false)
     private Boolean coperta;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "carta_valori", joinColumns = @JoinColumn(name = "id_carta"))
-    @Column(name = "valore")
     private List<Integer> valoriPossibili = new ArrayList<>();
-
-    @ManyToOne
-    @JoinColumn(name = "id_mazzo", nullable = true)
     private Mazzo mazzo;
 
     public Carta() {}
 
-    public Carta(Long id, Seme seme, Rango rango, Boolean coperta, List<Integer> valoriPossibili, Mazzo mazzo) {
-        this.id = id;
+    public Carta(Seme seme, Rango rango, Boolean coperta, List<Integer> valoriPossibili, Mazzo mazzo) {
+    
         this.seme = seme;
         this.rango = rango;
         this.coperta = coperta;
@@ -46,8 +26,6 @@ public class Carta {
     }
 
     // --- Getter e Setter ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public Seme getSeme() { return seme; }
     public void setSeme(Seme seme) { this.seme = seme; }
@@ -63,12 +41,7 @@ public class Carta {
 
     public Mazzo getMazzo() { return mazzo; }
     public void setMazzo(Mazzo mazzo) { this.mazzo = mazzo; }
-
-
-
-
-
-
+    
     @Override
     public String toString() {
         if (this.coperta) {

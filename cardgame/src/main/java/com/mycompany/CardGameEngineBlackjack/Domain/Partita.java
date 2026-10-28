@@ -17,14 +17,6 @@ public class Partita {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "stato", nullable = false)
-    private statoPartita stato;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "turno_corrente", nullable = false)
-    private Turno turnoCorrente;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "esito", nullable = false)
     private esitoPartita esito;
 
@@ -32,32 +24,19 @@ public class Partita {
     @JoinColumn(name = "id_giocatore", nullable = false)
     private Giocatore giocatore;
 
-    /* 
-     * FETCH TYPE EAGER vs LAZY:
-     * Di default, le relazioni @OneToMany sono di tipo LAZY (pigre). Questo significa che 
-     * Hibernate carica dal DB solo i dati della Partita, inserendo al posto della lista 
-     * un "Proxy" vuoto per risparmiare memoria. Quando il codice chiama mani.get(0), 
-     * il Proxy tenta di fare una nuova query al DB per scaricare i dati.
-     * Tuttavia, poiché il nostro GenericDao usa il costrutto "try-with-resources", 
-     * la Sessione del database viene chiusa un istante dopo il findById(). 
-     * Trovando la connessione chiusa, il Proxy va in crash (LazyInitializationException).
-     * 
-     * Impostando fetch = FetchType.EAGER (avido), costringiamo Hibernate a fare una 
-     * query con una JOIN immediata. In questo modo scarica l'intero blocco di dati 
-     * (Partita + Mani) in un colpo solo, caricandolo nella RAM mentre la Sessione 
-     * è ancora aperta.
-     */
-    @OneToMany(mappedBy = "partita", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Transient 
+    private statoPartita stato;
+
+    @Transient 
+    private Turno turnoCorrente;
+    
+    @Transient 
     private List<Mano> mani = new ArrayList<>();
 
-    // Le relazioni @OneToOne sono già EAGER di default, ma è buona norma esplicitarlo
-    // per chiarezza architetturale se si vuole il caricamento immediato.
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_mazzo", nullable = false)
+    @Transient 
     private Mazzo mazzo;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_dealer", nullable = false)
+    @Transient
     private Dealer dealer;
 
     public Partita() {}

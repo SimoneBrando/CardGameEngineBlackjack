@@ -12,6 +12,7 @@ public class dealerStrategyFactory {
         }
         
         // Predisposizione per varianti di regole (es. Dealer Hit on Soft 17)
+        // DA RIVEDERE
         if ("HitSoft17".equalsIgnoreCase(tipo)) {
             return (punteggioAttuale, haAssoSoft) -> {
                 if (punteggioAttuale < 17) return true;

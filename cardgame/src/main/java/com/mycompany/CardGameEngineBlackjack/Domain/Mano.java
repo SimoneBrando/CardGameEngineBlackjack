@@ -5,52 +5,15 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "mani")
+
 public class Mano {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_mano")
-    private Long id;
-
-    @Column(name = "punteggio")
     private Integer punteggio;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "stato_mano")
     private statoMano statoMano;
-
-    @Column(name = "derivata_da_split")
     private Boolean derivataDaSplit;
-
-    @ManyToOne
-    @JoinColumn(name = "id_partita", nullable = false)
     private Partita partita;
-
-    @ManyToOne
-    @JoinColumn(name = "id_giocatore") // Nullable perché potrebbe essere del Dealer
     private Giocatore giocatore;
-
-    @OneToOne
-    @JoinColumn(name = "id_dealer") // Nullable perché potrebbe essere del Giocatore
     private Dealer dealer;
-
-    /*
-     * Anche la relazione ManyToMany con le carte è LAZY di default. 
-     * Quando il livello Application chiama mano.calcolaPunteggio(), il Dominio 
-     * ha bisogno di scorrere la lista delle carte per sommare i valori. 
-     * Usando EAGER garantiamo che, non appena viene caricata una Mano, vengano
-     * scaricate istantaneamente anche tutte le carte ad essa associate.
-     * I cascade PERSIST e MERGE assicurano invece che le nuove carte pescate
-     * vengano salvate automaticamente all'aggiornamento della mano.
-     */
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "mano_carta",
-        joinColumns = @JoinColumn(name = "id_mano"),
-        inverseJoinColumns = @JoinColumn(name = "id_carta")
-    )
     private List<Carta> carte = new ArrayList<>();
 
     @OneToOne(mappedBy = "mano", cascade = CascadeType.ALL)
@@ -58,8 +21,7 @@ public class Mano {
 
     public Mano() {}
 
-    public Mano(Long id, Integer punteggio, statoMano statoMano, Boolean derivataDaSplit, Partita partita) {
-        this.id = id;
+    public Mano(Integer punteggio, statoMano statoMano, Boolean derivataDaSplit, Partita partita) {
         this.punteggio = punteggio;
         this.statoMano = statoMano;
         this.derivataDaSplit = derivataDaSplit;
@@ -67,9 +29,6 @@ public class Mano {
     }
 
     // --- Getter e Setter ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
     public Integer getPunteggio() { return punteggio; }
     public void setPunteggio(Integer punteggio) { this.punteggio = punteggio; }
 

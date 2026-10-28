@@ -54,7 +54,7 @@ public class MainTestIntegrazione {
             
             if (mossa.equals("H") || mossa.equals("HIT")) {
                 System.out.println("\nHai chiamato Hit!");
-                partita = controller.effettuaHit(partita.getId());
+                partita = controller.effettuaHit(partita);
                 
                 manoGiocatore = getManoGiocatore(partita);
                 stampaMano("Giocatore", manoGiocatore);
@@ -66,7 +66,7 @@ public class MainTestIntegrazione {
             } 
             else if (mossa.equals("S") || mossa.equals("STAND")) {
                 System.out.println("\nHai chiamato Stand. Turno del Dealer...");
-                partita = controller.effettuaStand(partita.getId());
+                partita = controller.effettuaStand(partita);
                 turnoGiocatore = false;
             } 
             else {

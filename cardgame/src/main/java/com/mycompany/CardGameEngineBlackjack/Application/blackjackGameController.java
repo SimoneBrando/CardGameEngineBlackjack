@@ -2,7 +2,6 @@ package com.mycompany.CardGameEngineBlackjack.Application;
 
 import com.mycompany.CardGameEngineBlackjack.Domain.Partita;
 import com.mycompany.CardGameEngineBlackjack.Domain.Giocatore;
-import com.mycompany.CardGameEngineBlackjack.Domain.Enum.*;
 import com.mycompany.CardGameEngineBlackjack.TechnicalService.partitaDAO;
 import com.mycompany.CardGameEngineBlackjack.TechnicalService.giocatoreDAO;
 import com.mycompany.CardGameEngineBlackjack.Application.Strategy.dealerStrategyFactory;
@@ -30,50 +29,45 @@ public class blackjackGameController {
         partita.inizializza(giocatore, importoPuntata);
         partita.distribuisciCarteIniziali();
         
-        // Salviamo il giocatore PRIMA della partita per consolidare le detrazioni o vincite immediate (es. Blackjack)
-        giocatoreDao.update(giocatore);
+        // Se il giocatore fa subito Blackjack, la partita termina immediatamente
+        if (partita.getStato() == com.mycompany.CardGameEngineBlackjack.Domain.Enum.statoPartita.TERMINATA) {
+            giocatoreDao.update(giocatore);
+            partitaDao.save(partita); // Salva le statistiche
+        }
         
-        partita = partitaDao.save(partita);
         return partita;
     }
 
-    public Partita effettuaHit(Long idPartita) {
-        Partita partita = partitaDao.findById(idPartita);
-        
+    // Riceve direttamente l'oggetto in RAM, non l'ID
+    public Partita effettuaHit(Partita partita) {
         if (partita.getStato() != com.mycompany.CardGameEngineBlackjack.Domain.Enum.statoPartita.IN_CORSO) {
             throw new IllegalStateException("La partita non è in corso.");
         }
 
         partita.eseguiHitGiocatore();
         
-        // Se l'Hit fa sballare il giocatore, la partita termina. Aggiorniamo il bilancio sul DB.
+        // Salva su DB solo se l'Hit fa sballare e chiude la mano
         if (partita.getStato() == com.mycompany.CardGameEngineBlackjack.Domain.Enum.statoPartita.TERMINATA) {
             giocatoreDao.update(partita.getGiocatore());
+            partitaDao.save(partita);
         }
         
-        partita = partitaDao.update(partita);
         return partita;
     }
 
-    public Partita effettuaStand(Long idPartita) {
-        Partita partita = partitaDao.findById(idPartita);
-        
+    public Partita effettuaStand(Partita partita) {
         if (partita.getStato() != com.mycompany.CardGameEngineBlackjack.Domain.Enum.statoPartita.IN_CORSO) {
             throw new IllegalStateException("La partita non è in corso.");
         }
 
-        com.mycompany.CardGameEngineBlackjack.Application.Strategy.dealerStrategy strategy = strategyFactory.getDealerStrategy("Standard17");
-        
+        dealerStrategy strategy = strategyFactory.getDealerStrategy("Standard17");
         partita.eseguiTurnoDealer(strategy);
         partita.determinaEsitoPartita();
         
-        // Lo Stand chiude sempre la partita. Aggiorniamo il portafoglio consolidando vittorie/sconfitte.
+        // A fine turno, consolida il portafoglio e salva lo storico per le statistiche
         giocatoreDao.update(partita.getGiocatore());
+        partitaDao.save(partita);
         
-        partita = partitaDao.update(partita);
         return partita;
     }
-
-
-    
 }

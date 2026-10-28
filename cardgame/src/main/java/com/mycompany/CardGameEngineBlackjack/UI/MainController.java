@@ -56,7 +56,7 @@ public class MainController {
         if (partitaCorrente == null) return;
 
         try {
-            partitaCorrente = gameController.effettuaHit(partitaCorrente.getId());
+            partitaCorrente = gameController.effettuaHit(partitaCorrente);
             aggiornaInterfaccia();
 
             if (partitaCorrente.getStato() == com.mycompany.CardGameEngineBlackjack.Domain.Enum.statoPartita.TERMINATA) {
@@ -72,7 +72,7 @@ public class MainController {
         if (partitaCorrente == null) return;
 
         try {
-            partitaCorrente = gameController.effettuaStand(partitaCorrente.getId());
+            partitaCorrente = gameController.effettuaStand(partitaCorrente);
             aggiornaInterfaccia();
             terminaPartita();
         } catch (Exception e) {

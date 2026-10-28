@@ -31,7 +31,7 @@ public class MainSeeder {
         giocatoreDao.save(beatrice);
 
         // 2. Creazione Dealer
-        Dealer dealer = new Dealer(null);
+        Dealer dealer = new Dealer();
         dealerDao.save(dealer);
 
         // 3. Generazione del Mazzo con 52 Carte
@@ -50,7 +50,7 @@ public class MainSeeder {
                     valori = Arrays.asList(rango.ordinal() + 1); 
                 }
                 
-                Carta carta = new Carta(null, seme, rango, true, valori, mazzo);
+                Carta carta = new Carta(seme, rango, true, valori, mazzo);
                 carteGenerate.add(carta);
             }
         }
@@ -61,11 +61,11 @@ public class MainSeeder {
         Partita partita = new Partita(null, statoPartita.IN_CORSO, Turno.GIOCATORE, esitoPartita.IN_ATTESA, francesco, dealer, mazzo);
         
         // Assegnazione di una mano al giocatore
-        Mano manoFrancesco = new Mano(null, 0, statoMano.IN_GIOCO, false, partita);
+        Mano manoFrancesco = new Mano(0, statoMano.IN_GIOCO, false, partita);
         manoFrancesco.setGiocatore(francesco);
         
         // Creazione di una puntata fittizia
-        Puntata puntata = new Puntata(null, 25, manoFrancesco);
+        Puntata puntata = new Puntata(25, manoFrancesco);
         Fiche fiche25 = new Fiche(null, taglioFiche.VENTICINQUE, 1, puntata);
         puntata.setFiches(Arrays.asList(fiche25));
         manoFrancesco.setPuntata(puntata);
