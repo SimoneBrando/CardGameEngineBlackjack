@@ -22,7 +22,7 @@ public class Giocatore {
     @OneToMany(mappedBy = "giocatore", cascade = CascadeType.ALL)
     private List<Partita> partite = new ArrayList<>();
 
-    @OneToMany(mappedBy = "giocatore", cascade = CascadeType.ALL)
+    @Transient
     private List<Mano> mani = new ArrayList<>();
 
     public Giocatore() {}

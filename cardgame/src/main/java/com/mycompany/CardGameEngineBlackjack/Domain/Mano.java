@@ -16,7 +16,7 @@ public class Mano {
     private Dealer dealer;
     private List<Carta> carte = new ArrayList<>();
 
-    @OneToOne(mappedBy = "mano", cascade = CascadeType.ALL)
+    @Transient
     private Puntata puntata;
 
     public Mano() {}

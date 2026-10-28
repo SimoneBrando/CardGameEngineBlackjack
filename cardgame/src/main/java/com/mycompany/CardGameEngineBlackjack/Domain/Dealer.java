@@ -1,9 +1,5 @@
 package com.mycompany.CardGameEngineBlackjack.Domain;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "dealers")
 public class Dealer {
 
     private Mano mano;
