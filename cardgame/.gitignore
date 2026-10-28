@@ -1,4 +1,11 @@
-target/
+# Maven
+**/target/
+
+# Java
 *.class
+
+# macOS
 .DS_Store
+
+# Configurazione Hibernate con credenziali locali
 /cardgame/src/main/resources/hibernate.cfg.xml
