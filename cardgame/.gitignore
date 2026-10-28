@@ -8,4 +8,4 @@
 .DS_Store
 
 # Configurazione Hibernate con credenziali locali
-/cardgame/src/main/resources/hibernate.cfg.xml
+**/src/main/resources/hibernate.cfg.xml
