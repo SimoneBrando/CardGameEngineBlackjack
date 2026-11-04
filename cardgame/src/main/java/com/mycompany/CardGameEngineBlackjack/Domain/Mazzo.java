@@ -17,7 +17,7 @@ public class Mazzo {
         this.stato = statoMazzo.PRONTO;
         this.numeroMazzi = 1;
         
-        // loop 52 volte indicato nel Sequence Diagram
+        // loop 52 volte
         for (Seme seme : Seme.values()) {
             for (Rango rango : Rango.values()) {
                 createCard(seme, rango);

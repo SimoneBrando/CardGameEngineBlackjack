@@ -8,4 +8,5 @@ public class Dealer {
 
     public Mano getMano() { return mano; }
     public void setMano(Mano mano) { this.mano = mano; }
+    
 }

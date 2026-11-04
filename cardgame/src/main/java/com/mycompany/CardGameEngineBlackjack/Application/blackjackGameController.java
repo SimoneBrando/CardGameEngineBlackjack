@@ -6,6 +6,9 @@ import com.mycompany.CardGameEngineBlackjack.TechnicalService.partitaDAO;
 import com.mycompany.CardGameEngineBlackjack.TechnicalService.giocatoreDAO;
 import com.mycompany.CardGameEngineBlackjack.Application.Strategy.dealerStrategyFactory;
 import com.mycompany.CardGameEngineBlackjack.Application.Strategy.dealerStrategy;
+import com.mycompany.CardGameEngineBlackjack.Domain.Enum.esitoPartita;
+import com.mycompany.CardGameEngineBlackjack.Domain.Enum.statoPartita;
+import com.mycompany.CardGameEngineBlackjack.Domain.Enum.statoPartita.*;
 
 public class blackjackGameController {
 
@@ -29,8 +32,8 @@ public class blackjackGameController {
         partita.inizializza(giocatore, importoPuntata);
         partita.distribuisciCarteIniziali();
         
-        // Se il giocatore fa subito Blackjack, la partita termina immediatamente
-        if (partita.getStato() == com.mycompany.CardGameEngineBlackjack.Domain.Enum.statoPartita.TERMINATA) {
+        // Se il giocatore fa subito Blackjack, la partita termina immediatamente e si aggiorna il giocatore e la partita
+        if (partita.getStato() == statoPartita.TERMINATA) {
             giocatoreDao.update(giocatore);
             partitaDao.save(partita); // Salva le statistiche
         }
@@ -40,7 +43,7 @@ public class blackjackGameController {
 
     // Riceve direttamente l'oggetto in RAM, non l'ID
     public Partita effettuaHit(Partita partita) {
-        if (partita.getStato() != com.mycompany.CardGameEngineBlackjack.Domain.Enum.statoPartita.IN_CORSO) {
+        if (partita.getStato() != statoPartita.IN_CORSO) {
             throw new IllegalStateException("La partita non è in corso.");
         }
 

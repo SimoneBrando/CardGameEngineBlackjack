@@ -7,7 +7,6 @@ import java.util.List;
 
 public class Carta {
 
-   
     private Seme seme;
     private Rango rango;
     private Boolean coperta;
@@ -15,15 +14,6 @@ public class Carta {
     private Mazzo mazzo;
 
     public Carta() {}
-
-    public Carta(Seme seme, Rango rango, Boolean coperta, List<Integer> valoriPossibili, Mazzo mazzo) {
-    
-        this.seme = seme;
-        this.rango = rango;
-        this.coperta = coperta;
-        this.valoriPossibili = valoriPossibili;
-        this.mazzo = mazzo;
-    }
 
     // --- Getter e Setter ---
 
@@ -41,7 +31,7 @@ public class Carta {
 
     public Mazzo getMazzo() { return mazzo; }
     public void setMazzo(Mazzo mazzo) { this.mazzo = mazzo; }
-    
+
     @Override
     public String toString() {
         if (this.coperta) {

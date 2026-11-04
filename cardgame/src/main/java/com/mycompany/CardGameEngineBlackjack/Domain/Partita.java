@@ -230,11 +230,14 @@ public class Partita {
         this.isPlayerBust = (manoGiocatore.getStatoMano() == statoMano.SBALLATA);
         this.isDealerBust = (manoDealer.getStatoMano() == statoMano.SBALLATA);
         
-        // Se in futuro implementi i flag di Double/Split sulle mani o puntate, collegali qui:
+        // ------------------- TO DO ------------------ //
         // this.isDouble = manoGiocatore.isDouble();
         // this.isSplit = manoGiocatore.isSplit();
     }
 
+
+    // Il metodo inizializza() è responsabile di impostare lo stato iniziale della partita, 
+    // creare le mani del giocatore e del dealer, e detrarre le fiches dal bilancio del giocatore.
     public void inizializza(Giocatore giocatore, Integer importoPuntata) {
         this.giocatore = giocatore;
         this.dataOra = LocalDateTime.now();
