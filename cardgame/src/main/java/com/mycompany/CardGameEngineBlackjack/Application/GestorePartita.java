@@ -535,6 +535,11 @@ public class GestorePartita {
         partita.setIsDealerBust(
                 manoDealer.getPunteggio() > 21
         );
+
+        // ------- TO DO --------- // 
+        // partita.setIsDouble();
+        //partita.setIsSplit();
+        
     }
 
     // =====================================================
