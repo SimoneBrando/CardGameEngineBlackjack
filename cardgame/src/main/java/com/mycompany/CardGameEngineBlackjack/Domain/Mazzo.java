@@ -16,16 +16,6 @@ public class Mazzo {
         this.carte = new ArrayList<>();
         this.stato = statoMazzo.PRONTO;
         this.numeroMazzi = 1;
-<<<<<<< HEAD
-        
-        // loop 52 volte
-        for (Seme seme : Seme.values()) {
-            for (Rango rango : Rango.values()) {
-                createCard(seme, rango);
-            }
-        }
-=======
->>>>>>> e46572a75879dc17e5a93597731c4970f2ff7854
     }
 
     public statoMazzo getStato() { return stato; }
