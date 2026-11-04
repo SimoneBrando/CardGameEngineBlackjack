@@ -16,6 +16,7 @@ public class Mazzo {
         this.carte = new ArrayList<>();
         this.stato = statoMazzo.PRONTO;
         this.numeroMazzi = 1;
+<<<<<<< HEAD
         
         // loop 52 volte
         for (Seme seme : Seme.values()) {
@@ -23,6 +24,8 @@ public class Mazzo {
                 createCard(seme, rango);
             }
         }
+=======
+>>>>>>> e46572a75879dc17e5a93597731c4970f2ff7854
     }
 
     public statoMazzo getStato() { return stato; }
@@ -33,50 +36,6 @@ public class Mazzo {
 
     public List<Carta> getCarte() { return carte; }
     public void setCarte(List<Carta> carte) { this.carte = carte; }
-
-
-
-    public Carta pescaCarta() {
-        if (carte == null || carte.isEmpty()) {
-            this.stato = statoMazzo.ESAURITO;
-            throw new IllegalStateException("Il mazzo è esaurito!");
-        }
-
-
-        Carta cartaPescata = carte.remove(carte.size() - 1);
-        // SCOLLEGA LA CARTA DAL MAZZO PER IL DATABASE
-        cartaPescata.setMazzo(null); 
-        
-        return cartaPescata;
-    }
-
-
-    // Il metodo interno SD: Deck -> Deck : createCard(seme, valore)
-    private void createCard(Seme seme, Rango rango) {
-        List<Integer> valori;
-        if (rango == Rango.ASSO) {
-            valori = Arrays.asList(1, 11);
-        } else if (rango == Rango.JACK || rango == Rango.REGINA || rango == Rango.RE) {
-            valori = Arrays.asList(10);
-        } else {
-            valori = Arrays.asList(rango.ordinal() + 1); 
-        }
-        
-        Carta carta = new Carta();
-        carta.setSeme(seme);
-        carta.setRango(rango);
-        carta.setCoperta(false);
-        carta.setValoriPossibili(valori);
-        carta.setMazzo(this);
-        
-        this.carte.add(carta);
-    }
-
-    // SD: Game -> Deck : mescola()
-    public void mescola() {
-        java.util.Collections.shuffle(this.carte);
-    }
-
 
     
 }

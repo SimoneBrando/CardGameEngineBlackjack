@@ -126,6 +126,7 @@ public class Partita {
     public List<Mano> getMani() { return mani; }
     public void setMani(List<Mano> mani) { this.mani = mani; }
 
+<<<<<<< HEAD
     // --- Logica di Gioco e Popolamento Statistiche ---
 
     public void distribuisciCarteIniziali() {
@@ -288,4 +289,7 @@ public class Partita {
         }
         throw new IllegalStateException("Mano del giocatore non trovata nella partita.");
     }
+=======
+    
+>>>>>>> e46572a75879dc17e5a93597731c4970f2ff7854
 }

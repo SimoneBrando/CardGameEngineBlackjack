@@ -73,7 +73,6 @@ public class MainTestDB {
             }
 
             // 4. Riepilogo (la carta coperta del dealer viene mostrata solo a partita finita)
-            partita.getDealer().getMano().scopriCartaCoperta();
             System.out.println("\n=== RISULTATO ===");
             stampaTavolo(partita, true);
             System.out.println("Esito: " + partita.getEsito());
