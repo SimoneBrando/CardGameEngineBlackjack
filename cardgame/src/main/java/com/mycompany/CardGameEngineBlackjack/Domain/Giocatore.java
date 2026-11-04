@@ -25,6 +25,9 @@ public class Giocatore {
     @Transient
     private List<Mano> mani = new ArrayList<>();
 
+    public Giocatore() {
+    }
+
     public Giocatore(Long id, String nome, Integer bilancioFiches) {
         this.id = id;
         this.nome = nome;
